@@ -5,6 +5,7 @@ import com.Ml_Dhia.QuizApp.dao.QuizDao;
 import com.Ml_Dhia.QuizApp.model.Question;
 import com.Ml_Dhia.QuizApp.model.QuestionWrapper;
 import com.Ml_Dhia.QuizApp.model.Quiz;
+import com.Ml_Dhia.QuizApp.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,5 +43,19 @@ public class QuizService {
         }
 
         return new  ResponseEntity<>(questionForUser , HttpStatus.OK);
+    }
+
+    public ResponseEntity<Integer> getSubmitResult(int id, List<Response> response) {
+        Optional<Quiz> getQuizFromDB =    quizDao.findById(id);
+        List<Question> getQuestionsFromQuiz = getQuizFromDB.get().getQuestions();
+        int trueResponse = 0 ;
+        for (Response R :response  ){
+            for (Question Q : getQuestionsFromQuiz){
+                if(Q.getId() == R.getId() && Q.getResponse().equals( R.getUserResponse()) ){
+                    trueResponse++ ;
+                }
+            }
+        }
+        return  new ResponseEntity<>(trueResponse , HttpStatus.OK);
     }
 }
